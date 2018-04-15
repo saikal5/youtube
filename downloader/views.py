@@ -4,10 +4,15 @@ from .models import Link
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponsePermanentRedirect
 
-def input(request):
-    return render(request, 'input.html', {})
-
 def download_video(request):
+
+    form = LinkForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'input.html', context)
+
+def download_video1(request):
     form = LinkForm(request.POST)
     if request.method == 'POST':
         if form.is_valid():
