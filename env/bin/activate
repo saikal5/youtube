@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelavent variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/saikal/maddev/youtube_dl/env"
+VIRTUAL_ENV="/home/saikal/maddevs/youtube_dl/env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

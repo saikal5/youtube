@@ -1,8 +1,7 @@
 import youtube_dl
 from .forms import LinkForm
 from .models import Link
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponsePermanentRedirect
+from django.shortcuts import render, redirect
 
 def download_video(request):
 
@@ -12,31 +11,23 @@ def download_video(request):
     }
     return render(request, 'input.html', context)
 
-def download_video1(request):
-    form = LinkForm(request.POST)
-    if request.method == 'POST':
-        if form.is_valid():
-            youtubeUrl = request.POST.get('url') # Получаем ссылку с формы
+def video(request):
+    ydl = youtube_dl.YoutubeDL({'outtmpl': '%(id)s%(ext)s'})
 
-            url = Link(url=youtubeUrl) # Сохроняем запись в БД
-            url.save()
+    with ydl:
+        result = ydl.extract_info(
+            'https://www.youtube.com/watch?v=k_QW_jmCLG0',
+            download=False
+        )
 
-            options = { # Настройки youtube_dl
-                'outtmpl': '%(title)s-%(id)s.%(ext)s',
-                'format': 'best'
-            }
+    if 'entries' in result:
+        video = result['entries'][0]
+    else:
+        video = result
 
-            with youtube_dl.YoutubeDL(options) as ydl:
-                r = ydl.extract_info(youtubeUrl, download=False) # Вставляем нашу ссылку с ютуба
-                videoUrl = r['webpage_url'] # Получаем прямую ссылку на скачивание видео
-                print(videoUrl)
+    v_formats = video['formats']
+    v_urls = [ x['url'] for x in v_formats if x['ext'] == 'mp4' and (x['height'] == 360 or x['height'] == 480) ]
+    v_url = v_urls[0]
+    return redirect(v_url)
 
-            name = 'test'
-            response = HttpResponsePermanentRedirect(videoUrl) # Вставляем прямую ссылку на скачивание в редирект
-            response['content_type'] = 'application/force-download'
-            response['Content-Disposition'] = 'attachment; filename=%s' % name
-
-            return response
-        else:
-            print('Form is not valid!')
 

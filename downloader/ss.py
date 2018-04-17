@@ -5,16 +5,13 @@ ydl = youtube_dl.YoutubeDL({'outtmpl': '%(id)s%(ext)s'})
 with ydl:
     result = ydl.extract_info(
         'https://www.youtube.com/watch?v=k_QW_jmCLG0',
-        download=False # We just want to extract the info
+        download=False
     )
 
 if 'entries' in result:
-    # Can be a playlist or a list of videos
     video = result['entries'][0]
 else:
-    # Just a video
     video = result
-
+v_formats = video
 print(video)
-res = video['url']
-print(res)
+
